@@ -5,7 +5,6 @@ const db = require('./database')
 
 //create new Sprint
 const createSprint = (sprintId, projectId, sprintSettings, sprintUsers, sprintTickets,team, callback)=>{
-
 	const sql = `INSERT INTO drafts (sprint_id, project_id, sprint_settings, sprint_users, sprint_tickets, team) values (?,?,?,?,?,?)`
 	db.run(sql,[sprintId, projectId, sprintSettings, sprintUsers, sprintTickets, team],(err)=>{
 		callback(err, {id: this.lastID})
@@ -21,9 +20,6 @@ const getSprint = (sprintId, projectId, team,callback)=>{
 
 //update sprint 
 const updateSprint = (sprintId, projectId,sprintSettings, sprintUsers, sprintTickets, team,callback)=>{
-
-	console.log("***********************"+team)
-
 	const sql = `UPDATE drafts SET sprint_settings = '${sprintSettings}', sprint_users =  '${sprintUsers}', sprint_tickets = '${sprintTickets}'  where sprint_id = '${sprintId}' and project_id = '${projectId}' and team = '${team}'`
 	db.all(sql,[], callback)
 }
@@ -31,7 +27,6 @@ const updateSprint = (sprintId, projectId,sprintSettings, sprintUsers, sprintTic
 
 //get sprint list
 const sprintList = (projectId,callback)=>{
-	console.log("*************"+projectId)
 	const sql = `SELECT DISTINCT sprint_id FROM drafts where project_id = '${projectId}'`
 	db.all(sql,[], callback)
 }
@@ -41,9 +36,15 @@ const sprintList = (projectId,callback)=>{
 
 //check if sprint exists
 const sprintExists = (sprintId, team,callback)=>{
-	console.log("*************"+sprintId)
 	const sql = `SELECT EXISTS(SELECT project_id FROM drafts WHERE sprint_id='${sprintId}' and team='${team}' )`
 	// const sql = `SELECT DISTINCT project_id FROM drafts where project_id = '${projectId}'`
+	db.all(sql,[], callback)
+}
+
+
+//delete sprint
+const sprintDelete = (id, callback)=>{
+	const sql = `DELETE FROM drafts where id = '${id}'`
 	db.all(sql,[], callback)
 }
 
@@ -62,7 +63,6 @@ const createSettings = (projectId, zsProjectId, projectSettings, qaHrKey, devHrK
 
 //get settings
 const getSettings = (zsProjectId,callback)=>{
-	console.log("+++++++++++"+zsProjectId)
 	const sql = `SELECT * FROM settings WHERE zs_project_Id = '${zsProjectId}'`
 	db.all(sql,[], callback)
 }
@@ -75,32 +75,29 @@ const getAllSettings = (callback)=>{
 
 //check project list
 const projectList = (projectId,callback)=>{
-	console.log("*************"+projectId)
 	const sql = `SELECT DISTINCT project_id FROM settings where zs_project_Id = '${projectId}'`
 	db.all(sql,[], callback)
 }
 
 
-//delet project
+//delete project
 const projectDelete = (id, callback)=>{
-	console.log("*************"+id)
 	const sql = `DELETE FROM settings where id = '${id}'`
 	db.all(sql,[], callback)
 }
 
 //update sprint 
 const updateSettings = (id, projectId, zsProjectId, projectSettings, qaHrKey, devHrKey, qaUserField, zsProjectName, zsPassKey, zsSprintKey ,callback)=>{
-	console.log("---------zsProjectId-----------"+JSON.stringify(projectSettings))
-	console.log("---------updateSettings-----------"+JSON.stringify(projectSettings))
 	
 	const sql = `UPDATE settings SET project_id = '${projectId}', zs_project_Id =  '${zsProjectId}', project_settings = '${projectSettings}', qa_hr_key = '${qaHrKey}', dev_hr_key = '${devHrKey}', qa_user_field = '${qaUserField}', zs_project_name = '${zsProjectName}', pass_key = '${zsPassKey}', zs_sprint_key = '${zsSprintKey}'  where id = '${id}'`
 	db.all(sql,[], callback)
 }
 
 
+
+
 //confirm pin 
 const getSprintPin = (id, callback)=>{
-	console.log("*************"+id)
 	const sql = `Select * from settings where id = '${id}'`
 	db.all(sql,[], callback)
 }
@@ -120,5 +117,6 @@ module.exports = {
 	updateSettings,
 	getAllSettings,
 	projectDelete,
-	getSprintPin
+	getSprintPin,
+	sprintDelete
 }

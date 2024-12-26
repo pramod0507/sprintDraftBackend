@@ -14,7 +14,8 @@ const {
   updateSettings,
   getAllSettings,
   projectDelete,
-  getSprintPin
+  getSprintPin,
+  sprintDelete
 } = require('./executions.js')
 app.use(express.json());
 
@@ -41,7 +42,7 @@ app.get("/jiraQueryCount/:id",async(req,res)=>{
 })
 
 
-// get all user datafrom a project
+// get all user data from a project
 app.get("/jiraUserList/:id",async(req,res)=>{
   var tempParams = req.params.id.split(":")
 
@@ -98,11 +99,11 @@ app.put("/sprint:id",async(req,res)=>{
 
     const {sprintId, projectId, sprintSettings, sprintUsers, sprintTickets, team} = req.body
     await updateSprint(sprintId, projectId , sprintSettings, sprintUsers, sprintTickets, team,(err,data)=>{
-      if(err){
-        res.status(500).send(err.message)
-      }else{
-        res.status(200).json(`Data updated`)
-      }
+        if(err){
+          res.status(500).send(err.message)
+        }else{
+          res.status(200).json(`Data updated`)
+        }
     })
 })
 
@@ -148,6 +149,20 @@ app.get("/sprintExists",async(req,res)=>{
       }
     })
 })
+
+
+// delete sprint from sql
+app.delete("/sprint",async(req,res)=>{
+
+    await sprintDelete(Number(req.query.id),(err,rows)=>{
+      if(err){
+        res.status(500).send(err.message)
+      }else{
+        res.status(200).json('Project deleted')
+      }
+    })
+})
+
 
 //settings api -------
 
